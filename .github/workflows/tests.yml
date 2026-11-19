@@ -35,10 +35,17 @@ jobs:
           --logger "trx;LogFileName=resultats-tests.trx"
           --collect:"XPlat Code Coverage"
           --results-directory ./TestResults
+      
+      - name: Génération du rapport de couverture
+        if: always()
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator -reports:"./TestResults/**/coverage.cobertura.xml" -targetdir:"./CoverageReport" -reporttypes:"MarkdownSummaryGithub;Html"
+          cat ./CoverageReport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
-      - name: Publication des résultats de tests
+      - name: Publication du rapport de couverture
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: resultats-tests
-          path: ./TestResults
+          name: rapport-couverture
+          path: ./CoverageReport
