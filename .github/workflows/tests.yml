@@ -1,0 +1,44 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, production ]
+  pull_request:
+    branches: [ main, production ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build & tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v5
+
+      - name: Installation du SDK .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restauration des dépendances
+        run: dotnet restore
+
+      - name: Compilation de la solution
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Exécution des tests
+        run:
+          dotnet test
+          --configuration Release
+          --no-build
+          --logger "trx;LogFileName=resultats-tests.trx"
+          --collect:"XPlat Code Coverage"
+          --results-directory ./TestResults
+
+      - name: Publication des résultats de tests
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: resultats-tests
+          path: ./TestResults
