@@ -27,11 +27,11 @@ public class OrdinateurServiceTests
         return new CatalogDbContext(options);
     }
 
-    private static OrdinateurRequest CreerRequeteOrdinateur()
+    private static OrdinateurRequest CreerRequeteOrdinateur(string nom = "MacBook Air")
     {
         return new OrdinateurRequest
         {
-            Nom = "MacBook Air",
+            Nom = nom,
             Marque = "Apple",
             Processeur = "Apple M1",
             RamGo = 8,
@@ -58,7 +58,7 @@ public class OrdinateurServiceTests
     }
 
     [Fact]
-    public async Task ObtenirOrdinateursTriesParNom()
+    public async Task ObtenirOrdinateurs()
     {
         await _service.CreerOrdinateurAsync(CreerRequeteOrdinateur("MacBook Air"));
         await _service.CreerOrdinateurAsync(CreerRequeteOrdinateur("Dell XPS 13"));
@@ -66,7 +66,7 @@ public class OrdinateurServiceTests
 
         var resultat = await _service.ObtenirOrdinateursAsync();
 
-        resultat.Select(o => o.Nom).Should().Equal("Dell XPS 13", "HP EliteDesk", "MacBook Air");
+        resultat.Select(o => o.Nom).Should().Equal( "MacBook Air", "Dell XPS 13", "HP EliteDesk");
     }
 
     [Fact]

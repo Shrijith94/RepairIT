@@ -27,11 +27,11 @@ public class UtilisateurServiceTests
         return new UserDbContext(options);
     }
 
-    private static CreerUtilisateurRequest CreerRequeteUtilisateur()
+    private static CreerUtilisateurRequest CreerRequeteUtilisateur(string nom = "Durand")
     {
         return new CreerUtilisateurRequest
         {
-            Nom = "Durand",
+            Nom = nom,
             Prenom = "Paul",
             Email = $"paul.{nom.ToLower()}@repairit.fr",
             Role = RoleUtilisateur.Gestionnaire
