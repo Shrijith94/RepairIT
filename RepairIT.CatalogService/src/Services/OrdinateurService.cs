@@ -1,14 +1,14 @@
 using Microsoft.EntityFrameworkCore;
-using RepairIT.Data;
+using RepairIT.CatalogService.Data;
 using RepairIT.Shared.Dtos;
 using RepairIT.Shared.Models;
 
 namespace RepairIT.CatalogService.Services;
 
-public class OrdinateurService(RepairItDbContext context) : IOrdinateurService
+public class OrdinateurService(CatalogDbContext context) : IOrdinateurService
 {
     public Task<List<Ordinateur>> ObtenirOrdinateursAsync(){
-        return context.Ordinateurs.Select(o => o).OrderBy(o => o.Nom).ToListAsync();
+        return context.Ordinateurs.Select(o => o).ToListAsync();
     }
 
     public Task<Ordinateur?> ObtenirOrdinateurAsync(int id) =>

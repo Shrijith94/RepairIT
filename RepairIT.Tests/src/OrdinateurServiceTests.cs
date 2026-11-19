@@ -1,8 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
+using RepairIT.CatalogService.Data;
 using RepairIT.CatalogService.Services;
-using RepairIT.Data;
 using RepairIT.Shared.Dtos;
 using RepairIT.Shared.Enums;
 
@@ -10,7 +9,7 @@ namespace RepairIT.Tests;
 
 public class OrdinateurServiceTests
 {
-    private readonly RepairItDbContext _context;
+    private readonly CatalogDbContext _context;
     private readonly OrdinateurService _service;
 
     public OrdinateurServiceTests()
@@ -19,27 +18,30 @@ public class OrdinateurServiceTests
         _service = new OrdinateurService(_context);
     }
 
-    private static RepairItDbContext CreerContexte()
+    private static CatalogDbContext CreerContexte()
     {
-        var options = new DbContextOptionsBuilder<RepairItDbContext>()
+        var options = new DbContextOptionsBuilder<CatalogDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
-        return new RepairItDbContext(options);
+        return new CatalogDbContext(options);
     }
 
-    private static OrdinateurRequest CreerRequeteOrdinateur(string nom = "Dell XPS 13") => new()
+    private static OrdinateurRequest CreerRequeteOrdinateur()
     {
-        Nom = nom,
-        Marque = "Dell",
-        Processeur = "Intel Core i7",
-        RamGo = 16,
-        StockageGo = 512,
-        Type = TypeOrdinateur.Portable,
-        Etat = EtatOrdinateur.Neuf,
-        Prix = 1299m,
-        QuantiteEnStock = 5
-    };
+        return new OrdinateurRequest
+        {
+            Nom = "MacBook Air",
+            Marque = "Apple",
+            Processeur = "Apple M1",
+            RamGo = 8,
+            StockageGo = 256,
+            Type = TypeOrdinateur.Portable,
+            Etat = EtatOrdinateur.Neuf,
+            Prix = 999m,
+            QuantiteEnStock = 10
+        };
+    }
 
     [Fact]
     public async Task CreerOrdinateur()

@@ -2,7 +2,6 @@
   <Project Path="RepairIT.AuthentificationService/RepairIT.AuthentificationService.csproj" />
   <Project Path="RepairIT.CatalogService/RepairIT.CatalogService.csproj" />
   <Project Path="RepairIT.Client/RepairIT.Client.csproj" />
-  <Project Path="RepairIT.Data/RepairIT.Data.csproj" />
   <Project Path="RepairIT.RepairService/RepairIT.RepairService.csproj" />
   <Project Path="RepairIT.SalesService/RepairIT.SalesService.csproj" />
   <Project Path="RepairIT.Shared/RepairIT.Shared.csproj" />

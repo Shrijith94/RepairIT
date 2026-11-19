@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RepairIT.Data;
+using RepairIT.UserService.Data;
 
 #nullable disable
 
-namespace RepairIT.Data.src.Migrations
+namespace RepairIT.UserService.Migrations
 {
-    [DbContext(typeof(RepairItDbContext))]
-    [Migration("20261117225948_InitialCreate")]
+    [DbContext(typeof(UserDbContext))]
+    [Migration("20261119192814_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -19,60 +19,6 @@ namespace RepairIT.Data.src.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.15");
-
-            modelBuilder.Entity("RepairIT.Shared.Models.Ordinateur", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("DateAjout")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Etat")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Marque")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Prix")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Processeur")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("QuantiteEnStock")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("RamGo")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("StockageGo")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Nom");
-
-                    b.ToTable("Ordinateurs", (string)null);
-                });
 
             modelBuilder.Entity("RepairIT.Shared.Models.Utilisateur", b =>
                 {

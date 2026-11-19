@@ -1,16 +1,15 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
-using RepairIT.Data;
 using RepairIT.Shared.Dtos;
 using RepairIT.Shared.Enums;
+using RepairIT.UserService.Data;
 using RepairIT.UserService.Services;
 
 namespace RepairIT.Tests;
 
 public class UtilisateurServiceTests
 {
-    private readonly RepairItDbContext _context;
+    private readonly UserDbContext _context;
     private readonly UtilisateurService _service;
 
     public UtilisateurServiceTests()
@@ -19,22 +18,25 @@ public class UtilisateurServiceTests
         _service = new UtilisateurService(_context);
     }
 
-    private static RepairItDbContext CreerContexte()
+    private static UserDbContext CreerContexte()
     {
-        var options = new DbContextOptionsBuilder<RepairItDbContext>()
+        var options = new DbContextOptionsBuilder<UserDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
-        return new RepairItDbContext(options);
+        return new UserDbContext(options);
     }
 
-    private static CreerUtilisateurRequest CreerRequeteUtilisateur(string nom = "Durand") => new()
+    private static CreerUtilisateurRequest CreerRequeteUtilisateur()
     {
-        Nom = nom,
-        Prenom = "Paul",
-        Email = $"paul.{nom.ToLower()}@repairit.fr",
-        Role = RoleUtilisateur.Gestionnaire
-    };
+        return new CreerUtilisateurRequest
+        {
+            Nom = "Durand",
+            Prenom = "Paul",
+            Email = $"paul.{nom.ToLower()}@repairit.fr",
+            Role = RoleUtilisateur.Gestionnaire
+        };
+    }
 
     [Fact]
     public async Task CreerUtilisateurActifAvecLaValeurKeycloakParDefaut()

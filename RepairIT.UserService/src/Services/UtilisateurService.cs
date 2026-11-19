@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using RepairIT.Shared.Dtos;
 using RepairIT.Shared.Models;
-using RepairIT.Data;
+using RepairIT.UserService.Data;
 
 namespace RepairIT.UserService.Services;
 
-public class UtilisateurService(RepairItDbContext context) : IUtilisateurService
+public class UtilisateurService(UserDbContext context) : IUtilisateurService
 {
     public Task<List<Utilisateur>> ObtenirUtilisateursAsync()
     {

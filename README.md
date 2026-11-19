@@ -7,24 +7,23 @@ Module ALTN71 – EFREI 2026-2027.
 
 - Création de la solution `RepairIT.slnx` et des projets (front et APIs)
 - CRUD des ordinateurs (`RepairIT.CatalogService`)
-- Gestion des utilisateurs : création (`RepairIT.UserService`). Keycloak n'est pas géré en V1 : le champ `UserIdKeycloak` prend la valeur par défaut `"non-associe"`
-- EF Core avec une base SQLite commune à tous les services (projet `RepairIT.Data`) et des migrations
+- Gestion des utilisateurs : création (`RepairIT.UserService`). Le champ `UserIdKeycloak` prend la valeur par défaut `"non-associe"` pour le moment
+- EF Core avec une base SQLite par microservice (`CatalogService` et `UserService`), chacune avec ses propres migrations
 - Application des migrations et données initiales au démarrage
-- Tests unitaires des services (xUnit, FluentAssertions, base EF Core en mémoire)
+- Tests unitaires des services qui reprensentent la partie métier de l'application (xUnit, FluentAssertions, base EF Core en mémoire)
 - Injection des dépendances, logging et configuration (`appsettings.json`)
 
 ## Projets
 
 | Projet | Rôle | URL (profil http) |
 |---|---|---|
-| `RepairIT.Client` | Front Blazor WebAssembly (template, intégré en V4) | http://localhost:5228 |
+| `RepairIT.Client` | Front Blazor WebAssembly| http://localhost:5228 |
 | `RepairIT.CatalogService` | API CRUD ordinateurs | http://localhost:5234/swagger |
 | `RepairIT.UserService` | API utilisateurs | http://localhost:5005/swagger |
-| `RepairIT.RepairService` | API réparations (template, V2) | http://localhost:5259 |
-| `RepairIT.SalesService` | API ventes (template, V3) | http://localhost:5089 |
-| `RepairIT.AuthentificationService` | API authentification (template, V5) | http://localhost:5006 |
+| `RepairIT.RepairService` | API réparations | http://localhost:5259 |
+| `RepairIT.SalesService` | API ventes | http://localhost:5089 |
+| `RepairIT.AuthentificationService` | API authentification | http://localhost:5006 |
 | `RepairIT.Shared` | Modèles, enums, DTO et options partagés | – |
-| `RepairIT.Data` | `RepairItDbContext` commun et migrations EF Core | – |
 | `RepairIT.Tests` | Tests unitaires | – |
 
 Dans chaque projet, le code se trouve dans un dossier `src/` (par exemple `RepairIT.CatalogService/src/Controllers`).
@@ -32,7 +31,7 @@ Dans chaque projet, le code se trouve dans un dossier `src/` (par exemple `Repai
 ## Lancement
 
 ```bat
-lancer-repairit.bat
+repairIT.bat
 ```
 
 Le script compile la solution et lance chaque projet dans sa propre fenêtre. Les API se testent avec Swagger.
@@ -41,16 +40,15 @@ Pour les tests : `dotnet test RepairIT.slnx`
 
 ## Choix techniques
 
-- **Organisation d'une API** : un *Controller* (HTTP) appelle un *Service* (métier + logs) qui utilise le *DbContext* EF Core. Le service est injecté par son interface (`IOrdinateurService`, `IUtilisateurService`), ce qui permet de le remplacer par un mock dans les tests.
+- **Organisation d'une API** : un *Controller* (HTTP) appelle un *Service* (métier) qui utilise le *DbContext* EF Core. Le service est injecté par son interface (`IOrdinateurService`, `IUtilisateurService`), ce qui permet de le remplacer par un mock dans les tests.
 - **Injection des dépendances** : tout est enregistré dans `Program.cs` (`AddDbContext`, `AddScoped`).
 - **Configuration** : chaîne de connexion dans `ConnectionStrings`, options d'initialisation dans la section `Database` (classe `DatabaseOptions`).
-- **Logging** : `ILogger<T>` dans les services (création, modification, suppression, cas introuvables).
+- **Logging** : `ILogger<T>` dans les controllers pour gérer les logs API dans la console du terminal.
 - **Initialisation de la base** : au démarrage, `Database.Migrate()` applique les migrations en attente (et crée la base si besoin), puis des données de démonstration sont insérées si la table est vide.
-- **Validation** : annotations sur les DTO (`[Required]`, `[Range]`, `[EmailAddress]`). Une requête invalide renvoie une erreur 400.
-- **Une base commune** : tous les services utilisent `RepairItDbContext` (projet `RepairIT.Data`) et le même fichier `RepairIT.Data/repairit.db`.
+- **Une base par microservice** : chaque service a son propre `DbContext` (`CatalogDbContext`, `UserDbContext`) dans `src/Data` et son propre fichier SQLite (`catalog.db`, `users.db`). Un service ne lit jamais la base d'un autre.
 
 ```json
-"ConnectionStrings": { "RepairItDb": "Data Source=../RepairIT.Data/repairit.db" },
+"ConnectionStrings": { "CatalogDb": "Data Source=catalog.db" },
 "Database": {
   "RecreerAuDemarrage": false,
   "InsererDonneesInitiales": true
@@ -61,48 +59,20 @@ Pour les tests : `dotnet test RepairIT.slnx`
 
 Outil à installer une fois : `dotnet tool install --global dotnet-ef`
 
-Les commandes se lancent depuis le dossier `RepairIT.Data` (la classe `RepairItDbContextFactory` fournit le contexte à l'outil) :
+Chaque microservice a ses propres migrations (dossier `Migrations` du projet). Les commandes se lancent depuis le dossier du service concerné ; `dotnet ef` lit la chaîne de connexion dans son `appsettings.json` :
 
 ```bat
-cd RepairIT.Data
-dotnet ef migrations add NomDeLaMigration --output-dir src/Migrations
+cd RepairIT.CatalogService
+dotnet ef migrations add NomDeLaMigration --output-dir Migrations
 dotnet ef database update
 ```
 
-Après une modification d'un modèle ou de `RepairItDbContext`, il suffit d'ajouter une migration : elle sera appliquée automatiquement au prochain démarrage d'une API.
+(idem dans `RepairIT.UserService`)
+
+Après une modification d'un modèle ou d'un `DbContext`, il suffit d'ajouter une migration dans le service concerné : elle sera appliquée automatiquement au prochain démarrage de l'API.
 
 ## Modèles de données
-
-### Table `Ordinateurs` (CatalogService)
-
-| Colonne | Type | Remarque |
-|---|---|---|
-| Id | int | Clé primaire |
-| Nom | string(100) | Obligatoire |
-| Marque | string(50) | Obligatoire |
-| Processeur | string(100) | Obligatoire |
-| RamGo | int | |
-| StockageGo | int | |
-| Type | string | Portable, Fixe, Serveur |
-| Etat | string | Neuf, Reconditionne, Occasion |
-| Prix | decimal(10,2) | |
-| QuantiteEnStock | int | |
-| DateAjout | DateTime (UTC) | Fixée à la création |
-
-### Table `Utilisateurs` (UserService)
-
-| Colonne | Type | Remarque |
-|---|---|---|
-| Id | int | Identifiant technique |
-| UserIdKeycloak | string(100) | Valeur par défaut `"non-associe"` en V1 |
-| Nom | string(100) | Obligatoire |
-| Prenom | string(100) | Obligatoire |
-| Email | string(200) | Obligatoire |
-| Role | string | Gestionnaire, Administrateur |
-| EstActif | bool | `true` à la création |
-| DateCreation | DateTime (UTC) | Fixée à la création |
-
-Aucun mot de passe n'est stocké : l'authentification sera gérée par Keycloak.
+Pour le moment dans la V1 nous n'avons que deux tables : "Ordinateurs" (base du CatalogService) et "Utilisateurs" (base du UserService). Les autres tables seront ajoutées dans les prochaines versions.
 
 ## Endpoints
 
@@ -126,6 +96,6 @@ Aucun mot de passe n'est stocké : l'authentification sera gérée par Keycloak.
 
 ## Tests unitaires
 
-`RepairIT.Tests` teste uniquement les services. Chaque test utilise sa propre base EF Core en mémoire (`UseInMemoryDatabase(Guid.NewGuid().ToString())`) :
+`RepairIT.Tests` teste uniquement les services car ils représentent la logique métier de l'application. Chaque test utilise sa propre base EF Core en mémoire (`UseInMemoryDatabase(Guid.NewGuid().ToString())`) :
 - `OrdinateurServiceTests` : création, liste triée par nom, lecture, modification, suppression, cas introuvables
-- `UtilisateurServiceTests` : création (actif, valeur Keycloak par défaut, rôle), lecture, liste triée par nom, cas introuvable
+- `UtilisateurServiceTests` : création , lecture, liste triée par nom, cas introuvable

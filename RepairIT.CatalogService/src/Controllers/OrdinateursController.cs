@@ -61,8 +61,8 @@ public class OrdinateursController(IOrdinateurService service, ILogger<Ordinateu
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> SupprimerOrdinateur(int id)
     {
-        var ordinateur = await service.ObtenirOrdinateurAsync(id);
-        if(ordinateur is null)
+        var ordinateurSupprime = await service.SupprimerOrdinateurAsync(id);
+        if(!ordinateurSupprime)
         {
             logger.LogWarning("DELETE - api/ordinateurs/"+ id +" - Ordinateur non trouvé");
             return StatusCode(404, new { message = "Ordinateur introuvable" });

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using RepairIT.Data;
 using RepairIT.Shared.Configuration;
 using RepairIT.Shared.Enums;
 using RepairIT.Shared.Models;
@@ -8,7 +7,7 @@ using RepairIT.Shared.Models;
 namespace RepairIT.UserService.Data;
 
 public class UserDbInitializer(
-    RepairItDbContext context,
+    UserDbContext context,
     IOptions<DatabaseOptions> options,
     ILogger<UserDbInitializer> logger)
 {
