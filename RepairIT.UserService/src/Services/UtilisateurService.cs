@@ -13,7 +13,7 @@ public class UtilisateurService(UserDbContext context) : IUtilisateurService
     }
 
     public Task<Utilisateur?> ObtenirUtilisateurAsync(int id) =>
-        context.Utilisateurs.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+        context.Utilisateurs.Select(u => u).FirstOrDefaultAsync(u => u.Id == id);
 
     public async Task<Utilisateur> CreerUtilisateurAsync(CreerUtilisateurRequest requete)
     {

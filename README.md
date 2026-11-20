@@ -31,7 +31,7 @@ Dans chaque projet, le code se trouve dans un dossier `src/` (par exemple `Repai
 ## Lancement
 
 ```bat
-repairIT.bat
+./repairIT.bat
 ```
 
 Le script compile la solution et lance chaque projet dans sa propre fenêtre. Les API se testent avec Swagger.
