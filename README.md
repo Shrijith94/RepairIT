@@ -96,6 +96,6 @@ Pour le moment dans la V1 nous n'avons que deux tables : "Ordinateurs" (base du 
 
 ## Tests unitaires
 
-`RepairIT.Tests` teste uniquement les services car ils représentent la logique métier de l'application. Chaque test utilise sa propre base EF Core en mémoire (`UseInMemoryDatabase(Guid.NewGuid().ToString())`) :
+`RepairIT.Tests` teste uniquement les services car ils représentent la logique métier (donc uniquement les classe Service sont couverts) de l'application. Chaque test utilise sa propre base EF Core en mémoire (`UseInMemoryDatabase(Guid.NewGuid().ToString())`) :
 - `OrdinateurServiceTests` : création, liste triée par nom, lecture, modification, suppression, cas introuvables
 - `UtilisateurServiceTests` : création , lecture, liste triée par nom, cas introuvable
