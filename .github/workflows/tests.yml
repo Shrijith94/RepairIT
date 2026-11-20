@@ -40,7 +40,7 @@ jobs:
         if: always()
         run: |
           dotnet tool install --global dotnet-reportgenerator-globaltool
-          reportgenerator -reports:"./TestResults/**/coverage.cobertura.xml" -targetdir:"./CoverageReport" -reporttypes:"MarkdownSummaryGithub;Html --classfilters +*Service"
+          reportgenerator -reports:"./TestResults/**/coverage.cobertura.xml" -targetdir:"./CoverageReport" -reporttypes:"MarkdownSummaryGithub;Html" -classfilters:"+*.Services.*"
           cat ./CoverageReport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
       - name: Publication du rapport de couverture
